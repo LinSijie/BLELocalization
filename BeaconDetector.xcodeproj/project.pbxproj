@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		87B033F52435491F0097AB7F /* BeaconInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87B033F42435491F0097AB7F /* BeaconInfoView.swift */; };
 		87BD39F72429CEFA00928DF0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BD39F62429CEFA00928DF0 /* AppDelegate.swift */; };
 		87BD39F92429CEFA00928DF0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BD39F82429CEFA00928DF0 /* SceneDelegate.swift */; };
 		87BD39FB2429CEFA00928DF0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BD39FA2429CEFA00928DF0 /* ContentView.swift */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		87B033F42435491F0097AB7F /* BeaconInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeaconInfoView.swift; sourceTree = "<group>"; };
 		87BD39F32429CEFA00928DF0 /* BeaconDetector.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BeaconDetector.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		87BD39F62429CEFA00928DF0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		87BD39F82429CEFA00928DF0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -59,6 +61,7 @@
 				87BD39F62429CEFA00928DF0 /* AppDelegate.swift */,
 				87BD39F82429CEFA00928DF0 /* SceneDelegate.swift */,
 				87BD39FA2429CEFA00928DF0 /* ContentView.swift */,
+				87B033F42435491F0097AB7F /* BeaconInfoView.swift */,
 				87BD39FC2429CEFD00928DF0 /* Assets.xcassets */,
 				87BD3A012429CEFD00928DF0 /* LaunchScreen.storyboard */,
 				87BD3A042429CEFD00928DF0 /* Info.plist */,
@@ -148,6 +151,7 @@
 			files = (
 				87BD39F72429CEFA00928DF0 /* AppDelegate.swift in Sources */,
 				87BD39F92429CEFA00928DF0 /* SceneDelegate.swift in Sources */,
+				87B033F52435491F0097AB7F /* BeaconInfoView.swift in Sources */,
 				87BD39FB2429CEFA00928DF0 /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
