@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<head>
+<script type='text/javascript' charset="UTF-8">
+//https://blog.csdn.net/u013090676/article/details/73865137
+function calc(){
+    var a1 = parseInt(document.getElementById("a1").value);
+    var b1 = parseInt(document.getElementById("b1").value);
+    var r1 = parseInt(document.getElementById("r1").value);
+    var a2 = parseInt(document.getElementById("a2").value);
+    var b2 = parseInt(document.getElementById("b2").value);
+    var r2 = parseInt(document.getElementById("r2").value);
+    var a3 = parseInt(document.getElementById("a3").value);
+    var b3 = parseInt(document.getElementById("b3").value);
+    var r3 = parseInt(document.getElementById("r3").value);
+    if (isNaN(a1) || isNaN(a2) || isNaN(a3) || 
+        isNaN(b1) || isNaN(b2) || isNaN(b3) || 
+        isNaN(r1) || isNaN(r2) || isNaN(r3)) {
+        alert("incorrect input");
+    }
+    var n = 3.25; 
+    //n为环境衰减因子，需要测试矫正，最佳范围在3.25-4.5之间。
+    var a = 45;
+    //A为距离探测设备1m时的rssi值的绝对值，最佳范围在45-49之间。
+    var d1 = Math.pow(10, ((Math.abs(r1) - a)/(10*n)))
+    var d2 = Math.pow(10, ((Math.abs(r2) - a)/(10*n)))
+    var d3 = Math.pow(10, ((Math.abs(r3) - a)/(10*n)))
+    console.log("d1=" + d1 + " d2=" + d2 + " d3=" + d3);
+    var zero = Math.pow(a1 - a2, 2) + Math.pow(b1 - b2, 2) - Math.pow(d1 + d2, 2);
+    console.log("zero=" + zero);
+    if (Math.abs(zero) < 10) {
+        var x = a1 + (a2 - a1) * (d1 / (d1 + d2));
+        var y = b1 + (b2 - b1) * (d1 / (r1 + d2));
+        var d3_cal = Math.sqrt(Math.pow(x - a3, 2) + Math.pow(y - b3, 2))
+        console.log("d3=" + d3 + " d3_cal=" + d3_cal);
+        if (d3 - d3_cal < 10) {
+            document.getElementById("result").innerHTML = "x: " + Math.round(x) + " y: " + Math.round(y);
+            return;
+        }
+    }
+    alert("strange input data!");
+}
+</script>
+</head>
+<body>
+a1: <input id="a1"><br>
+b1: <input id="b1"><br>
+rssi1: <input id="r1"><br>
+<br>
+a2: <input id="a2"><br>
+b2: <input id="b2"><br>
+rssi2: <input id="r2"><br>
+<br>
+a3: <input id="a3"><br>
+b3: <input id="b3"><br>
+rssi3: <input id="r3"><br>
+<br>
+<button onclick="calc()">Calc</button>
+<br>
+<span id="result"></span>
+</body>
