@@ -61,14 +61,38 @@ import SwiftUI
     }
  }
  
-
+ struct Triangle : Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.midX, y:rect.minY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.midX, y: rect.minY))
+        return path
+    }
+ }
+ 
  struct ContentView: View {
     @ObservedObject var detector = BeaconScanner()
+
     var body: some View {
-        List(detector.lastBeacons, id: \.major) { beacon in
-          BeaconInfoView(beacon: beacon)
+        VStack{
+            ZStack{
+                Image("map").resizable()
+                Triangle()
+                    .fill(Color.red)
+                    .frame(width: 15, height: 15)
+                    .offset(x:40, y:-100)
+                
+            }
+    
+            List(detector.lastBeacons, id: \.major) { beacon in
+              BeaconInfoView(beacon: beacon)
+            }
         }
+        
     }
+    
 }
 
 struct ContentView_Previews: PreviewProvider {
@@ -76,3 +100,5 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
+
+
