@@ -88,12 +88,13 @@ import SwiftUI
         if detector.lastBeacons.count < 3 {
             return []
         }
-        let a1 = detector.lastBeacons[0].beacon.major.doubleValue
-        let b1 = detector.lastBeacons[0].beacon.minor.doubleValue
-        let a2 = detector.lastBeacons[1].beacon.major.doubleValue
-        let b2 = detector.lastBeacons[1].beacon.minor.doubleValue
-        let a3 = detector.lastBeacons[2].beacon.major.doubleValue
-        let b3 = detector.lastBeacons[2].beacon.minor.doubleValue
+        let scale = 38.537
+        let a1 = detector.lastBeacons[0].beacon.major.doubleValue / scale
+        let b1 = detector.lastBeacons[0].beacon.minor.doubleValue / scale
+        let a2 = detector.lastBeacons[1].beacon.major.doubleValue / scale
+        let b2 = detector.lastBeacons[1].beacon.minor.doubleValue / scale
+        let a3 = detector.lastBeacons[2].beacon.major.doubleValue / scale
+        let b3 = detector.lastBeacons[2].beacon.minor.doubleValue / scale
         let r1 = Double(detector.lastBeacons[0].beacon.rssi)
         let r2 = Double(detector.lastBeacons[1].beacon.rssi)
         let r3 = Double(detector.lastBeacons[2].beacon.rssi)
@@ -106,14 +107,14 @@ import SwiftUI
 
         let zero = pow(a1 - a2, 2) + pow(b1 - b2, 2) - pow(d1 + d2, 2);
         print("zero = \(zero)")
-        if (abs(zero) < 10) {
+        if (abs(zero) < 100) {
             let x = a1 + (a2 - a1) * (d1 / (d1 + d2));
             let y = b1 + (b2 - b1) * (d1 / (r1 + d2));
             let d3_cal = sqrt(pow(x - a3, 2) + pow(y - b3, 2))
         
             if (d3 - d3_cal < 10) {
-                print("x = \(round(x)), y = \(round(y))")
-                return [round(x),round(y)]
+                print("x = \(round(x * scale)), y = \(round(y * scale))")
+                return [round(x * scale),round(y * scale)]
             }
         }
         return []
@@ -138,7 +139,7 @@ import SwiftUI
                     Triangle()
                     .fill(Color.red)
                     .frame(width: 10, height: 10)
-                        .offset(x: CGFloat(threePoint[0]), y: CGFloat(threePoint[1]))
+                        .offset(x: CGFloat(threePoint[0] - 200), y: CGFloat(threePoint[1] - 311))
                 }
                 // TODO: other algorithm
             }
