@@ -82,17 +82,62 @@ import SwiftUI
  
  struct ContentView: View {
     @ObservedObject var detector = BeaconScanner()
+    
+    var threePoint: [Double] {
+        if detector.lastBeacons.count < 3 {
+            return []
+        }
+        let a1 = detector.lastBeacons[0].beacon.major.doubleValue
+        let b1 = detector.lastBeacons[0].beacon.minor.doubleValue
+        let a2 = detector.lastBeacons[1].beacon.major.doubleValue
+        let b2 = detector.lastBeacons[1].beacon.minor.doubleValue
+        let a3 = detector.lastBeacons[2].beacon.major.doubleValue
+        let b3 = detector.lastBeacons[2].beacon.minor.doubleValue
+        let r1 = Double(detector.lastBeacons[0].beacon.rssi)
+        let r2 = Double(detector.lastBeacons[1].beacon.rssi)
+        let r3 = Double(detector.lastBeacons[2].beacon.rssi)
+        let n = 3.25
+        let a = 45.0
+        let d1 = pow(10, ((abs(r1) - a)/(10*n)))
+        let d2 = pow(10, ((abs(r2) - a)/(10*n)))
+        let d3 = pow(10, ((abs(r3) - a)/(10*n)))
+        print("d1 = \(d1), d2 = \(d2), d3 = \(d3)")
+
+        let zero = pow(a1 - a2, 2) + pow(b1 - b2, 2) - pow(d1 + d2, 2);
+        print("zero = \(zero)")
+        if (abs(zero) < 10) {
+            let x = a1 + (a2 - a1) * (d1 / (d1 + d2));
+            let y = b1 + (b2 - b1) * (d1 / (r1 + d2));
+            let d3_cal = sqrt(pow(x - a3, 2) + pow(y - b3, 2))
+        
+            if (d3 - d3_cal < 10) {
+                print("x = \(round(x)), y = \(round(y))")
+                return [round(x),round(y)]
+            }
+        }
+        return []
+    }
 
     var body: some View {
         VStack{
             ZStack{
-                Image("map").resizable()
+                Image("map").resizable().scaledToFill()
+                // beacons position
                 ForEach(detector.lastBeacons) { identifiableBeacon in
                     Triangle()
                     .fill(Color.blue)
                     .frame(width: 10, height: 10)
                         .offset(x: CGFloat(truncating: identifiableBeacon.beacon.major), y: CGFloat(truncating: identifiableBeacon.beacon.minor))
                 }
+                // user device position
+                // three points
+                if threePoint.count == 2 {
+                    Triangle()
+                    .fill(Color.red)
+                    .frame(width: 10, height: 10)
+                        .offset(x: CGFloat(threePoint[0]), y: CGFloat(threePoint[1]))
+                }
+                // TODO: other algorithm
             }
     
             List(detector.lastBeacons) { identifiableBeacon in
