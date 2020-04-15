@@ -2,133 +2,211 @@
 //  ContentView.swift
 //  BeaconScanner
 //
-//  Created by 林思劼 on 3/24/20.
-//  Copyright © 2020 林思劼. All rights reserved.
+//  Created by Xingying Ma on 4/15/20.
+//  Copyright © 2020 Xingying Ma. All rights reserved.
 //
 import Combine
 import CoreLocation
 import SwiftUI
- 
- class BeaconScanner: NSObject, ObservableObject, CLLocationManagerDelegate {
-    var locationManager: CLLocationManager?
-    @Published var lastDistance = CLProximity.unknown
-    @Published var lastRSSI = -99
 
-    override init() {
-        super.init()
-
-        locationManager = CLLocationManager()
-        locationManager?.delegate = self
-        locationManager?.requestWhenInUseAuthorization()
-    }
-
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        if status == .authorizedWhenInUse {
-            print("authorizedWhenInUse")
-            if CLLocationManager.isMonitoringAvailable(for: CLBeaconRegion.self) {
-                print("isMonitoringAvailable")
-                if CLLocationManager.isRangingAvailable(){
-                    print("isRangingAvailable")
-                    // we are good to go!
-                    startScanning()
-                }
+ struct ContentView: View {
+      @State var oneText = ""
+      @State var twoText = ""
+      @State var threeText = ""
+      @State var four = ""
+      @State var five = ""
+      @State var six = ""
+      @State var seven = ""
+      @State var eight = ""
+      @State var nine = ""
+      @State var showanswer = false
+     @State var countx = 0.0
+     @State var county = 0.0
+     var body: some View {
+        VStack{
+            Group {
+            
+            VStack{
+                Text("K-means Calculation").bold()
+                    .foregroundColor(.orange)
+                    .font(.largeTitle)
+                    .padding()
+                Spacer()
+            }.frame(height:50)
+            .cornerRadius(8)
+            .padding(EdgeInsets(top: -200, leading: 0, bottom: 0, trailing: 0))
+            
+            //first
+            VStack{
+                TextField("x1", text: $oneText)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        //.keyboardType(.numberPad)
+                        .padding()
+                     Spacer()
+                 }.frame(height:50)
+                     //.background(Color.gray)
+                     .cornerRadius(8)
+                     .padding(EdgeInsets(top: -120, leading: 10, bottom: 0, trailing: 230))
+        
+            VStack{
+                TextField("y1", text: $twoText)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    //.keyboardType(.numberPad)
+                    .padding()
+                Spacer()
+            }.frame(height:50)
+                //.background(Color.gray)
+                .cornerRadius(8)
+                .padding(EdgeInsets(top: -120, leading: 120, bottom: 0, trailing: 120))
+            
+            VStack{
+                TextField("RSSI 1", text: $threeText)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    //.keyboardType(.numberPad)
+                    .padding()
+                Spacer()
+            }.frame(height:50)
+                //.background(Color.gray)
+                .cornerRadius(8)
+                .padding(EdgeInsets(top: -120, leading: 230, bottom: 0, trailing: 10))
+        
+                //second
+                VStack{
+                         TextField("x2 ", text: $four)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            //.keyboardType(.numberPad)
+                            .padding()
+                         Spacer()
+                     }.frame(height:50)
+                         //.background(Color.blue)
+                         .cornerRadius(8)
+                         .padding(EdgeInsets(top: -70, leading: 10, bottom: 0, trailing: 230))
+            
+                VStack{
+                    TextField("y2", text: $five)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        //.keyboardType(.numberPad)
+                        .padding()
+                    Spacer()
+                }.frame(height:50)
+                    //.background(Color.blue)
+                    .cornerRadius(8)
+                    .padding(EdgeInsets(top: -70, leading: 120, bottom: 0, trailing: 120))
+                
+                VStack{
+                    TextField("RSSI 2", text: $six)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        //.keyboardType(.numberPad)
+                        .padding()
+                    Spacer()
+                }.frame(height:50)
+                    //.background(Color.blue)
+                    .cornerRadius(8)
+                    .padding(EdgeInsets(top: -70, leading: 230, bottom: 0, trailing: 10))
+            
+                //third
+                VStack{
+                         TextField("x3", text: $seven)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            //.keyboardType(.numberPad)
+                            .padding()
+                         Spacer()
+                     }.frame(height:50)
+                         //.background(Color.blue)
+                         .cornerRadius(8)
+                         .padding(EdgeInsets(top: -20, leading: 10, bottom: 0, trailing: 230))
+            
+                VStack{
+                    TextField("y3", text: $eight)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        //.keyboardType(.numberPad)
+                        .padding()
+                    Spacer()
+                }.frame(height:50)
+                    //.background(Color.blue)
+                    .cornerRadius(8)
+                    .padding(EdgeInsets(top: -50, leading: 120, bottom: 0, trailing: 120))
             }
-        }
-    }
+                
+                VStack{
+                    TextField("RSSI 3", text: $nine)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        //.keyboardType(.numberPad)
+                        .padding()
+                    Spacer()
+                }.frame(height:50)
+                    //.background(Color.blue)
+                    .cornerRadius(8)
+                    .padding(EdgeInsets(top: -50, leading: 230, bottom: 0, trailing: 10))
+                
+                
+            VStack(spacing:100){
+                    Button(action: {
+                        self.Kmeans()
+                        self.showanswer.toggle()
+                    }) {
+                        HStack {
+                            Image(systemName: "pencil")
+                                .font(.title)
+                            Text("Calculate")
+                                .fontWeight(.semibold)
+                                .font(.title)
+                            }.padding()
+                        .foregroundColor(.white)
+                        .background(Color.red)
+                        .cornerRadius(40)
+                        .padding(EdgeInsets(top: 10, leading: 0, bottom: 0, trailing: 0))
+                    }
+            
+            if showanswer {
+                VStack{
+                    Text(String(countx))
+                        .font(.largeTitle)
+                    Text(String(county))
+                    .font(.largeTitle)
+                }.frame(height:50)
+            }
+            }
+        
+     }
 
-    func startScanning() {
-        print("Start Scanning")
-        let uuid = UUID(uuidString: "5a4bcfce-174e-4bac-a814-092e77f6b7e5")!
-        let constraint = CLBeaconIdentityConstraint(uuid: uuid, major: 123, minor: 456)
-        let beaconRegion = CLBeaconRegion(beaconIdentityConstraint: constraint, identifier: "MyBeacon")
-        locationManager?.startMonitoring(for: beaconRegion)
-        locationManager?.startRangingBeacons(satisfying: constraint)
-    }
-
-    func locationManager(_ manager: CLLocationManager, didRange beacons: [CLBeacon], satisfying beaconConstraint: CLBeaconIdentityConstraint) {
-        print("didRange")
-        if let beacon = beacons.first {
-            print("beacon = beacons.first")
-            update(distance: beacon.proximity, rssi: beacon.rssi)
-        } else {
-            print("beacon = unknown")
-            update(distance: .unknown, rssi: -99)
-        }
-    }
-
-    func update(distance: CLProximity, rssi: Int) {
-        print("update lastdistance")
-        lastDistance = distance
-        lastRSSI = rssi
-    }
  }
- 
- struct BigText: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .font(Font.system(size: 72, design: .rounded))
-    }
- }
-
-struct ContentView: View {
-    @ObservedObject var detector = BeaconScanner()
     
-    var body: some View {
-        if detector.lastDistance == .immediate {
-            return VStack {
-                VStack {
-                    Text("IMMEDIATE")
-                        .font(Font.system(size: 72, design: .rounded))
-                    Text("RSSI = " + String(detector.lastRSSI))
-                        .font(Font.system(size: 36, design: .rounded))
-                }
-                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-                .background(Color.red)
-                .edgesIgnoringSafeArea(.all)
-            }
-        } else if detector.lastDistance == .near {
-            return VStack {
-                VStack {
-                    Text("NEAR")
-                        .font(Font.system(size: 72, design: .rounded))
-                    Text("RSSI = " + String(detector.lastRSSI))
-                        .font(Font.system(size: 36, design: .rounded))
-                }
-                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-                .background(Color.orange)
-                .edgesIgnoringSafeArea(.all)
-            }
-        } else if detector.lastDistance == .far {
-            return VStack {
-                VStack {
-                    Text("FAR")
-                        .font(Font.system(size: 72, design: .rounded))
-                    Text("RSSI = " + String(detector.lastRSSI))
-                        .font(Font.system(size: 36, design: .rounded))
-                }
-                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-                .background(Color.blue)
-                .edgesIgnoringSafeArea(.all)
-            }
-        } else {
-            return VStack {
-                VStack {
-                    Text("UNKNOWN")
-                        .font(Font.system(size: 72, design: .rounded))
-                    Text("RSSI = " + String(detector.lastRSSI))
-                        .font(Font.system(size: 36, design: .rounded))
-                }
-                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-                .background(Color.gray)
-                .edgesIgnoringSafeArea(.all)
-            }
-        }
-//        Text("RSSI: ")
-    }
-}
+func Kmeans() {
+        
+    let a1 = Double(oneText)!
+    let b1 = Double(twoText)!
+    let a2 = Double(four)!
+    let b2 = Double(five)!
+    let a3 = Double(seven)!
+    let b3 = Double(eight)!
+    let r1 = Double(threeText)!
+    let r2 = Double(six)!
+    let r3 = Double(nine)!
+    let n = 3.25
+    let a = 45.0
+    let d1 = pow(10, ((abs(r1) - a)/(10*n)))
+    let d2 = pow(10, ((abs(r2) - a)/(10*n)))
+    let d3 = pow(10, ((abs(r3) - a)/(10*n)))
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
+    let zero = pow(a1 - a2, 2) + pow(b1 - b2, 2) - pow(d1 + d2, 2);
+
+    if (abs(zero) < 10) {
+        let x = a1 + (a2 - a1) * (d1 / (d1 + d2));
+        let y = b1 + (b2 - b1) * (d1 / (r1 + d2));
+        let d3_cal = sqrt(pow(x - a3, 2) + pow(y - b3, 2))
+    
+        if (d3 - d3_cal < 10) {
+            countx =  round(x)
+            county = round(y)
+        }
+    
     }
-}
+    }
+    
+ struct NormalTextFieldDemo_Previews: PreviewProvider {
+     static var previews: some View {
+         ContentView()
+     }
+ }
+ }
