@@ -64,6 +64,7 @@ import SwiftUI
         print("update last beacon array")
         lastBeacons = []
         for beacon in beacons {
+            print(String(beacon.rssi))
             lastBeacons.append(identifiableBeacon(beacon: beacon))
         }
     }
@@ -121,13 +122,15 @@ import SwiftUI
     var body: some View {
         VStack{
             ZStack{
-                Image("map").resizable().scaledToFill()
-                // beacons position
+                Image("map")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 400, height: 622)
                 ForEach(detector.lastBeacons) { identifiableBeacon in
                     Triangle()
                     .fill(Color.blue)
                     .frame(width: 10, height: 10)
-                        .offset(x: CGFloat(truncating: identifiableBeacon.beacon.major), y: CGFloat(truncating: identifiableBeacon.beacon.minor))
+                        .offset(x: CGFloat(truncating: identifiableBeacon.beacon.major)-200, y: CGFloat(truncating: identifiableBeacon.beacon.minor)-311)
                 }
                 // user device position
                 // three points
