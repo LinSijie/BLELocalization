@@ -9,9 +9,14 @@ import Combine
 import CoreLocation
 import SwiftUI
  
+ struct identifiableBeacon: Identifiable {
+    var id = UUID()
+    var beacon: CLBeacon
+ }
+ 
  class BeaconScanner: NSObject, ObservableObject, CLLocationManagerDelegate {
     var locationManager: CLLocationManager?
-    @Published var lastBeacons: [CLBeacon] = []
+    @Published var lastBeacons: [identifiableBeacon] = []
 
     override init() {
         super.init()
@@ -57,7 +62,10 @@ import SwiftUI
 
     func update(beacons: [CLBeacon]) {
         print("update last beacon array")
-        lastBeacons = beacons
+        lastBeacons = []
+        for beacon in beacons {
+            lastBeacons.append(identifiableBeacon(beacon: beacon))
+        }
     }
  }
  
@@ -79,15 +87,16 @@ import SwiftUI
         VStack{
             ZStack{
                 Image("map").resizable()
-                Triangle()
-                    .fill(Color.red)
-                    .frame(width: 15, height: 15)
-                    .offset(x:40, y:-100)
-                
+                ForEach(detector.lastBeacons) { identifiableBeacon in
+                    Triangle()
+                    .fill(Color.blue)
+                    .frame(width: 10, height: 10)
+                        .offset(x: CGFloat(truncating: identifiableBeacon.beacon.major), y: CGFloat(truncating: identifiableBeacon.beacon.minor))
+                }
             }
     
-            List(detector.lastBeacons, id: \.major) { beacon in
-              BeaconInfoView(beacon: beacon)
+            List(detector.lastBeacons) { identifiableBeacon in
+                BeaconInfoView(beacon: identifiableBeacon.beacon)
             }
         }
         
