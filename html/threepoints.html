@@ -24,6 +24,8 @@ function calc(){
     //n为环境衰减因子，需要测试矫正，最佳范围在3.25-4.5之间。
     var a = 58;
     //A为距离探测设备1m时的rssi值的绝对值，最佳范围在45-49之间。
+    var err = 1.5;
+    //误差允许值(米)
     var d1 = Math.pow(10, ((Math.abs(r1) - a)/(10*n)))
     var d2 = Math.pow(10, ((Math.abs(r2) - a)/(10*n)))
     var d3 = Math.pow(10, ((Math.abs(r3) - a)/(10*n)))
@@ -31,18 +33,25 @@ function calc(){
     //判断任意两个圆是否相切（外切），这里可以设定一个误差允许值d，也就是
     //(x1–x2)^2 + (y1-y2)^2= (r1+r2+d)^2
     var ab = Math.pow(a1 - a2, 2) + Math.pow(b1 - b2, 2);
-    var err = 2;
     var ab_max = Math.pow(d1 + d2 + err, 2);
     var ab_min = Math.pow(d1 + d2 - err, 2);
     console.log("ab=" + ab + " ab_max=" + ab_max + " ab_min=" + ab_min);
     if (ab < ab_max && ab > ab_min) {
         var x = a1 + (a2 - a1) * (d1 / (d1 + d2));
         var y = b1 + (b2 - b1) * (d1 / (d1 + d2));
-        var d3_cal = Math.sqrt(Math.pow(x - a3, 2) + Math.pow(y - b3, 2))
+        var d3_cal = Math.sqrt(Math.pow(x - a3, 2) + Math.pow(y - b3, 2));
+        //d3_cal 为计算值(x,y)到(a3,b3)的距离
         console.log("d3_cal=" + d3_cal);
-        if (d3 - d3_cal < 3) {
+        if (d3 >= d3_cal || d3_cal - d3 <= err) {
+            //在范围内，直接return
             document.getElementById("result").innerHTML = "x: " + x + " y: " + y;
             return;
+        } else {
+            //在范围外，把(x,y)向(a3,b3)平移一段距离
+            var diff = d3_cal - d3 - err;
+            var newx = -(x - a3) * d3_cal / diff;
+            var newy = -(y - b3) * d3_cal / diff;
+            document.getElementById("result").innerHTML = "x: " + newx + " y: " + newy;
         }
     }
     alert("strange input data!");
