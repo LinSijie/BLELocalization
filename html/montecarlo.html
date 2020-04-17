@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<head>
+<script type='text/javascript' charset="UTF-8">
+function test(){
+    document.getElementById("inputs").innerHTML = "";
+    var num = parseInt(document.getElementById("num").value);
+    if (isNaN(num)) {
+        alert("incorrect input");
+    }
+    for (var i = 1; i <= num; i++) {
+        document.getElementById("inputs").innerHTML += 'a'+i+': <input id="a'+i+'"><br>b'+i+': <input id="b'+i+'"><br>rssi'+i+': <input id="r'+i+'"><br><br>';
+    }
+}
+
+function calc(){
+    var num = parseInt(document.getElementById("num").value);
+    var arra = [];
+    var arrb = [];
+    var arrr = [];
+    for (var i = 1; i <= num; i++) {
+        if(isNaN(parseFloat(document.getElementById("a"+i).value)) ||
+            isNaN(parseFloat(document.getElementById("b"+i).value)) ||
+            isNaN(parseFloat(document.getElementById("r"+i).value))) {
+            alert("incorrect input");
+            return;
+        }
+        arra.push(parseFloat(document.getElementById("a"+i).value));
+        arrb.push(parseFloat(document.getElementById("b"+i).value));
+        arrr.push(parseFloat(document.getElementById("r"+i).value));
+    }
+    
+    var n = 2.0;
+    var a = 58;
+    var err = 1.5;
+    var simtimes = 1000;
+    
+    var arrd = [];
+    for (var i = 0; i < num; i++) {
+        arrd.push(Math.pow(10, ((Math.abs(arrr[i]) - a)/(10*n))));
+    }
+    console.log("arrd:"+arrd);
+    var minx = Math.min(...arra);
+    var maxx = Math.max(...arra);
+    var miny = Math.min(...arrb);
+    var maxy = Math.max(...arrb);
+    console.log("minx="+minx+" maxx="+maxx+" miny="+miny+" maxy="+maxy);
+    
+    var diffx = maxx - minx;
+    var diffy = maxy - miny;
+    
+    var countx = 0;
+    var county = 0;
+    var sumx = 0;
+    var sumy = 0;
+    
+    for (var i = 0; i < simtimes; i++) {
+        var testx = Math.random() * diffx + minx;
+        var testy = Math.random() * diffy + miny;
+        
+        //test whether this generated value is within the distance to all beacons
+        var satisfy = true;
+        for (var j = 0; j < num; j++) {
+            var d_cal = Math.sqrt(Math.pow(testx - arra[j], 2) + Math.pow(testy - arrb[j], 2));
+            if (d_cal - err > arrd[j]) {
+                satisfy = false;
+                break;
+            }
+        }
+        if (satisfy) {
+            countx++;
+            county++;
+            sumx += testx;
+            sumy += testy;
+        }
+    }
+    if (countx > 0) {
+        var x = sumx / countx;
+        var y = sumy / county;
+        document.getElementById("result").innerHTML = "x: " + x + " y: " + y;
+    } else {
+        alert("strange input data!");
+    }
+}
+</script>
+</head>
+<body>
+Number of signals:<input id="num" onchange="test()"><br><br>
+<span id="inputs"></span>
+<button onclick="calc()">Calc</button>
+<br>
+<span id="result"></span>
+</body>
