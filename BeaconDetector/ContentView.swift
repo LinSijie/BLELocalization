@@ -126,12 +126,10 @@ import SwiftUI
                 Image("map")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 400, height: 622)
+                    .frame(width: 400, height: 622).opacity(0.2)
                 ForEach(detector.lastBeacons) { identifiableBeacon in
-                    Triangle()
-                    .fill(Color.blue)
-                    .frame(width: 10, height: 10)
-                        .offset(x: CGFloat(truncating: identifiableBeacon.beacon.major)-200, y: CGFloat(truncating: identifiableBeacon.beacon.minor)-311)
+                    Image("ibeacon").resizable().frame(width: 30, height: 35)
+                    .offset(x: CGFloat(truncating: identifiableBeacon.beacon.major)-200, y: CGFloat(truncating: identifiableBeacon.beacon.minor)-311)
                 }
                 // user device position
                 // three points
