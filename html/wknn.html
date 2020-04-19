@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<head>
+<script type='text/javascript' charset="UTF-8">
+function test(){
+    document.getElementById("inputs").innerHTML = "";
+    var num = parseInt(document.getElementById("num").value);
+    if (isNaN(num)) {
+        alert("incorrect input");
+    }
+    for (var i = 1; i <= num; i++) {
+        document.getElementById("inputs").innerHTML += 'a'+i+': <input id="a'+i+'"><br>b'+i+': <input id="b'+i+'"><br>rssi'+i+': <input id="r'+i+'"><br><br>';
+    }
+}
+
+function calc(){
+    var num = parseInt(document.getElementById("num").value);
+    var arra = [];
+    var arrb = [];
+    var arrr = [];
+    for (var i = 1; i <= num; i++) {
+        if(isNaN(parseFloat(document.getElementById("a"+i).value)) ||
+            isNaN(parseFloat(document.getElementById("b"+i).value)) ||
+            isNaN(parseFloat(document.getElementById("r"+i).value))) {
+            alert("incorrect input");
+            return;
+        }
+        arra.push(parseFloat(document.getElementById("a"+i).value));
+        arrb.push(parseFloat(document.getElementById("b"+i).value));
+        arrr.push(parseFloat(document.getElementById("r"+i).value));
+    }
+    
+    var n = 2.0;
+    var simtimes = 5000;
+    
+    // k = 3
+    var a = [0, 0, 0];
+    var b = [0, 0, 0];
+    var r = [999, 999, 999];
+    
+    for (var i = 0; i < num; i++) {
+        for (var j = 0; j < r.length; j++){
+            if (Math.abs(arrr[i]) < r[j]) {
+                for (var k = r.length - 1; k > j; k--) {
+                    r[k] = r[k-1];
+                    b[k] = b[k-1];
+                    a[k] = a[k-1];
+                }
+                r[j] = Math.abs(arrr[i]);
+                b[j] = arrb[i];
+                a[j] = arra[i];
+                break;
+            }
+        }
+    }
+    console.log("a:"+a+" b:"+b+" r:"+r);
+    
+    var d01 = Math.pow(10, (r[0] - r[1])/n/10);
+    var d12 = Math.pow(10, (r[1] - r[2])/n/10);
+    var d02 = Math.pow(10, (r[0] - r[2])/n/10);
+    console.log("d01:"+d01+" d12:"+d12+" d02:"+d02);
+    
+    d01 = Math.round(d01 * 10); //note: convert to integer!
+    d12 = Math.round(d12 * 10); //note: convert to integer!
+    d02 = Math.round(d02 * 10); //note: convert to integer!
+    
+    var minx = Math.min(...arra);
+    var maxx = Math.max(...arra);
+    var miny = Math.min(...arrb);
+    var maxy = Math.max(...arrb);
+    console.log("minx="+minx+" maxx="+maxx+" miny="+miny+" maxy="+maxy);
+    
+    var diffx = maxx - minx;
+    var diffy = maxy - miny;
+    
+    for (var i = 0; i < simtimes; i++) {
+        var testx = Math.random() * diffx + minx;
+        var testy = Math.random() * diffy + miny;
+        
+        var d0 = Math.sqrt(Math.pow(testx - a[0], 2) + Math.pow(testy - b[0], 2));
+        var d1 = Math.sqrt(Math.pow(testx - a[1], 2) + Math.pow(testy - b[1], 2));
+        var d2 = Math.sqrt(Math.pow(testx - a[2], 2) + Math.pow(testy - b[2], 2));
+        
+        var d01_cal = Math.round(d0/d1 * 10); //note: convert to integer!
+        var d12_cal = Math.round(d1/d2 * 10); //note: convert to integer!
+        var d02_cal = Math.round(d0/d2 * 10); //note: convert to integer!
+        //console.log("testx:"+testx+" testy:"+testy);
+        //console.log("d01_cal:"+d01_cal+" d12_cal:"+d12_cal+" d02_cal:"+d02_cal);
+        
+        if (d01_cal == d01 && d12_cal == d12 && d02_cal == d02){
+            document.getElementById("result").innerHTML = "x: " + testx + " y: " + testy;
+            console.log("simtimes:"+i);
+            return;
+        }        
+    }
+    alert("strange input data!");
+}
+</script>
+</head>
+<body>
+Number of signals:<input id="num" onchange="test()"><br><br>
+<span id="inputs"></span>
+<button onclick="calc()">Calc</button>
+<br>
+<span id="result"></span>
+</body>
