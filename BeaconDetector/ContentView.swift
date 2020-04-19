@@ -83,6 +83,7 @@ import SwiftUI
  
  struct ContentView: View {
     @ObservedObject var detector = BeaconScanner()
+    @State var showList = false
     
     var threePoint: [Double] {
         if detector.lastBeacons.count < 3 {
@@ -121,34 +122,55 @@ import SwiftUI
     }
 
     var body: some View {
-        VStack{
-            ZStack{
-                Image("map")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 400, height: 622).opacity(0.2)
-                ForEach(detector.lastBeacons) { identifiableBeacon in
-                    Image("ibeacon").resizable().frame(width: 30, height: 35)
-                    .offset(x: CGFloat(truncating: identifiableBeacon.beacon.major)-200, y: CGFloat(truncating: identifiableBeacon.beacon.minor)-311)
+        let drag = DragGesture().onEnded{
+            if $0.translation.width < -100 {
+                withAnimation {
+                    self.showList = false
                 }
-                // user device position
-                // three points
-                if threePoint.count == 2 {
-                    Triangle()
-                    .fill(Color.red)
-                    .frame(width: 10, height: 10)
-                        .offset(x: CGFloat(threePoint[0] - 200), y: CGFloat(threePoint[1] - 311))
-                }
-                // TODO: other algorithm
-            }
-    
-            List(detector.lastBeacons) { identifiableBeacon in
-                BeaconInfoView(beacon: identifiableBeacon.beacon)
             }
         }
-        
+        return NavigationView {
+            GeometryReader { geometry in
+                ZStack (alignment: .leading) {
+                    ZStack {
+                        Image("map")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 400, height: 622).opacity(0.2)
+                        ForEach(self.detector.lastBeacons) { identifiableBeacon in
+                            Image("ibeacon").resizable().frame(width: 30, height: 35)
+                            .offset(x: CGFloat(truncating: identifiableBeacon.beacon.major)-200, y: CGFloat(truncating: identifiableBeacon.beacon.minor)-311)
+                        }
+                        // user device position
+                        // three points
+                        if self.threePoint.count == 2 {
+                            Triangle()
+                            .fill(Color.red)
+                            .frame(width: 10, height: 10)
+                                .offset(x: CGFloat(self.threePoint[0] - 200), y: CGFloat(self.threePoint[1] - 311))
+                        }
+                        // TODO: other algorithm
+                    }
+            
+                    if self.showList {
+                        List(self.detector.lastBeacons) { identifiableBeacon in
+                            BeaconInfoView(beacon: identifiableBeacon.beacon)
+                        }.frame(width: geometry.size.width * 4 / 5).transition(.move(edge: .leading))
+                        
+                    }
+                }.gesture(drag)
+            }.navigationBarTitle(Text("BLE Localization"), displayMode: .inline)
+            .navigationBarItems(leading: (
+                Button( action: {
+                    withAnimation{
+                        self.showList.toggle()
+                    }
+                }) {
+                    Image(systemName: "line.horizontal.3").imageScale(.large)
+                }
+            ))
+        }
     }
-    
 }
 
 struct ContentView_Previews: PreviewProvider {
