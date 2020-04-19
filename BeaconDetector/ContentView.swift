@@ -137,6 +137,7 @@ import SwiftUI
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 400, height: 622).opacity(0.2)
+                            .opacity(0.7)
                         ForEach(self.detector.lastBeacons) { identifiableBeacon in
                             Image("ibeacon").resizable().frame(width: 30, height: 35)
                             .offset(x: CGFloat(truncating: identifiableBeacon.beacon.major)-200, y: CGFloat(truncating: identifiableBeacon.beacon.minor)-311)
