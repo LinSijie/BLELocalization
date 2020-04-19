@@ -109,7 +109,7 @@ import SwiftUI
         print("zero = \(zero)")
         if (abs(zero) < 100) {
             let x = a1 + (a2 - a1) * (d1 / (d1 + d2));
-            let y = b1 + (b2 - b1) * (d1 / (r1 + d2));
+            let y = b1 + (b2 - b1) * (d1 / (d1 + d2));
             let d3_cal = sqrt(pow(x - a3, 2) + pow(y - b3, 2))
         
             if (d3 - d3_cal < 10) {
