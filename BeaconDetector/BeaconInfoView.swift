@@ -33,8 +33,8 @@ struct BeaconInfoView: View {
         return HStack {
             VStack(alignment: .leading) {
                 
-                Text(text)
-                    .font(Font.system(size: 36, design: .rounded))
+//                Text(text)
+//                    .font(Font.system(size: 36, design: .rounded))
                 
                 HStack {
                     Text("RSSI = " + String(beacon.rssi))
