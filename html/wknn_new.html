@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<head>
+<script type='text/javascript' charset="UTF-8">
+//https://www.researchgate.net/publication/316752574_Bluetooth_positioning_based_on_weighted_K-nearest_neighbors_and_adaptive_bandwidth_mean_shift
+var traningdata = [
+[-61,-45,-66,-58,-61,-56],
+[-70,-58,-54,-55,-56,-52],
+[-60,-56,-58,-53,-66,-50],
+[-51,-64,-66,-60,-68,-52],
+[-51,-64,-65,-60,-57,-57],
+[-43,-58,-65,-68,-56,-50],
+[-57,-59,-61,-57,-63,-58],
+[-55,-67,-69,-68,-56,-46],
+[-63,-72,-78,-71,-72,-64],
+[-58,-60,-65,-56,-53,-56],
+[-53,-59,-55,-59,-63,-58],
+[-53,-59,-68,-66,-63,-47],
+[-55,-60,-68,-62,-66,-54]
+];
+var traningpts = [
+[45,300],
+[45,370],
+[150,370],
+[200,370],
+[300,370],
+[300,300],
+[150,320],
+[200,250],
+[60,250],
+[300,425],
+[45,420],
+[200,300],
+[350,300]
+];
+var beacons = [
+[325,250],
+[40,300],
+[40,425],
+[150,425],
+[300,425],
+[200,300]
+];
+function test(){
+    document.getElementById("inputs").innerHTML = "";
+    var num = parseInt(document.getElementById("num").value);
+    if (isNaN(num)) {
+        alert("incorrect input");
+    }
+    for (var i = 1; i <= num; i++) {
+        document.getElementById("inputs").innerHTML += 'a'+i+': <input id="a'+i+'" value='+beacons[i%num][0]+'><br>b'+i+': <input id="b'+i+'" value='+beacons[i%num][1]+'><br>rssi'+i+': <input id="r'+i+'" value='+Math.abs(traningdata[2][i%num])+'><br><br>';
+    }
+}
+
+function calc(){
+    var num = parseInt(document.getElementById("num").value);
+    var arra = [];
+    var arrb = [];
+    var arrr = [];
+    for (var i = 1; i <= num; i++) {
+        if(isNaN(parseInt(document.getElementById("a"+i).value)) ||
+            isNaN(parseInt(document.getElementById("b"+i).value)) ||
+            isNaN(parseFloat(document.getElementById("r"+i).value))) {
+            alert("incorrect input");
+            return;
+        }
+        arra.push(parseInt(document.getElementById("a"+i).value));
+        arrb.push(parseInt(document.getElementById("b"+i).value));
+        arrr.push(parseFloat(document.getElementById("r"+i).value));
+    }
+    
+    var simtimes = 5000;
+    var e = 0.001;
+    
+    r = [];
+    for (var i = 0; i < beacons.length; i++) {
+        var found = false;
+        for (j = 0; j < num; j++) {
+            if (beacons[i][0] == arra[j] && beacons[i][1] == arrb[j]) {
+                r.push(Math.abs(arrr[j]));
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            r.push(0);
+        }
+    }
+    console.log("r:"+r);
+    
+    var standardized = [];
+    var weight = [];
+    var minr = Math.min(...r);
+    var maxr = Math.max(...r);
+    for (var i = 0; i < r.length; i++) {
+        standardized.push((r[i] - minr)/(maxr - minr));
+        if (r[i] == 0) {
+            weight.push(0);
+        } else {
+            weight.push(1 - standardized[i]/2);
+        }
+    }
+    console.log("standardized:"+standardized);
+    console.log("weight:"+weight);
+    
+    var stdtrainingdata = [];
+    for (var i = 0; i < traningdata.length; i++) {
+        var array = [];
+        var minarray = Math.abs(Math.max(...traningdata[i]));
+        var maxarray = Math.abs(Math.min(...traningdata[i]));
+        for (var j = 0; j < traningdata[i].length; j++) {
+            array.push((Math.abs(traningdata[i][j]) - minarray)/(maxarray - minarray));
+        }
+        stdtrainingdata.push(array);
+    }
+    console.log("stdtrainingdata:");
+    console.log(stdtrainingdata);
+    
+    var eucd = [];
+    var denominator = 0;
+    for (var i = 0; i < traningdata.length; i++) {
+        var di = 0;
+        for (var j = 0; j < r.length; j++) {
+            di += weight[j] * Math.pow(Math.abs(standardized[j] - Math.abs(stdtrainingdata[i][j])), 2)
+        }
+        di = Math.sqrt(di) / r.length;
+        eucd.push(di);
+        denominator += 1 / (di + e);
+    }
+    console.log("eucd:"+eucd);
+    
+    var sumx = 0;
+    var sumy = 0;
+    for (var i = 0; i < traningdata.length; i++) {
+        sumx += traningpts[i][0] / (eucd[i] + e);
+        sumy += traningpts[i][1] / (eucd[i] + e);
+    }
+    
+    var x = sumx / denominator;
+    var y = sumy / denominator;
+    document.getElementById("result").innerHTML = "x: " + x + " y: " + y;
+}
+</script>
+</head>
+<body>
+Number of signals:<input id="num" onchange="test()"><br><br>
+<span id="inputs"></span>
+<button onclick="calc()">Calc</button>
+<br>
+<span id="result"></span>
+</body>
