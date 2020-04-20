@@ -101,7 +101,7 @@ import SwiftUI
         }
         
         let n = 2.0
-        let a = 58.0
+        let ac = 58.0
         let err = 5.0
         
         var a = [0.0, 0.0, 0.0]
@@ -138,9 +138,9 @@ import SwiftUI
         let b3 = b[2]
         let r3 = r[2]
         
-        let d1 = pow(10, ((abs(r1) - a)/(10*n)))
-        let d2 = pow(10, ((abs(r2) - a)/(10*n)))
-        let d3 = pow(10, ((abs(r3) - a)/(10*n)))
+        let d1 = pow(10, ((abs(r1) - ac)/(10*n)))
+        let d2 = pow(10, ((abs(r2) - ac)/(10*n)))
+        let d3 = pow(10, ((abs(r3) - ac)/(10*n)))
         print("d1 = \(d1), d2 = \(d2), d3 = \(d3)")
         //判断任意两个圆是否相切（外切），这里可以设定一个误差允许值d，也就是
         //(x1–x2)^2 + (y1-y2)^2= (r1+r2+d)^2
