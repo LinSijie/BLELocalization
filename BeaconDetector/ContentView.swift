@@ -90,18 +90,54 @@ import SwiftUI
             return []
         }
         let scale = 38.537
-        let a1 = detector.lastBeacons[0].beacon.major.doubleValue / scale
-        let b1 = detector.lastBeacons[0].beacon.minor.doubleValue / scale
-        let a2 = detector.lastBeacons[1].beacon.major.doubleValue / scale
-        let b2 = detector.lastBeacons[1].beacon.minor.doubleValue / scale
-        let a3 = detector.lastBeacons[2].beacon.major.doubleValue / scale
-        let b3 = detector.lastBeacons[2].beacon.minor.doubleValue / scale
-        let r1 = Double(detector.lastBeacons[0].beacon.rssi)
-        let r2 = Double(detector.lastBeacons[1].beacon.rssi)
-        let r3 = Double(detector.lastBeacons[2].beacon.rssi)
+        var arra = [Double]()
+        var arrb = [Double]()
+        var arrr = [Double]()
+        
+        for i in 0...(detector.lastBeacons.count)-1 {
+            arra.append(detector.lastBeacons[i].beacon.major.doubleValue/scale)
+            arrb.append(detector.lastBeacons[i].beacon.minor.doubleValue/scale)
+            arrr.append(Double(detector.lastBeacons[i].beacon.rssi))
+        }
+        
         let n = 2.0
         let a = 58.0
         let err = 5.0
+        
+        var a = [0.0, 0.0, 0.0]
+        var b = [0.0, 0.0, 0.0]
+        var r = [999.0, 999.0, 999.0]
+        
+        for i in 0...(detector.lastBeacons.count)-1 {
+            for j in 0...r.count-1 {
+                if (abs(arrr[i]) < r[j]) {
+                    if j < 2 {
+                        for k in (j+1...r.count-1).reversed() {
+                            
+                            r[k] = r[k-1]
+                            b[k] = b[k-1]
+                            a[k] = a[k-1]
+                        }
+                    }
+                    
+                    r[j] = abs(arrr[i])
+                    b[j] = arrb[i]
+                    a[j] = arra[i]
+                    break;
+                }
+            }
+        }
+        
+        let a1 = a[0]
+        let b1 = b[0]
+        let r1 = r[0]
+        let a2 = a[1]
+        let b2 = b[1]
+        let r2 = r[1]
+        let a3 = a[2]
+        let b3 = b[2]
+        let r3 = r[2]
+        
         let d1 = pow(10, ((abs(r1) - a)/(10*n)))
         let d2 = pow(10, ((abs(r2) - a)/(10*n)))
         let d3 = pow(10, ((abs(r3) - a)/(10*n)))
@@ -348,5 +384,3 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
-
-
