@@ -144,9 +144,9 @@ import SwiftUI
         print("d1 = \(d1), d2 = \(d2), d3 = \(d3)")
         //判断任意两个圆是否相切（外切），这里可以设定一个误差允许值d，也就是
         //(x1–x2)^2 + (y1-y2)^2= (r1+r2+d)^2
-        var ab = pow(a1 - a2, 2) + pow(b1 - b2, 2)
-        var ab_max = pow(d1 + d2 + err, 2)
-        var ab_min = pow(max(d1 + d2 - err, 0.0), 2)
+        let ab = pow(a1 - a2, 2) + pow(b1 - b2, 2)
+        let ab_max = pow(d1 + d2 + err, 2)
+        let ab_min = pow(max(d1 + d2 - err, 0.0), 2)
 
         if (ab < ab_max && ab > ab_min) {
             let x = a1 + (a2 - a1) * (d1 / (d1 + d2))
@@ -157,9 +157,9 @@ import SwiftUI
                 print("x = \(round(x * scale)), y = \(round(y * scale))")
                 return [x * scale, y * scale]
             } else {
-                var diff = d3_cal - d3
-                var newx = -(x - a3) * diff / d3_cal
-                var newy = -(y - b3) * diff / d3_cal
+                let diff = d3_cal - d3
+                let newx = -(x - a3) * diff / d3_cal
+                let newy = -(y - b3) * diff / d3_cal
                 print("newx = \(round(newx * scale)), newy = \(round(newy * scale))")
                 return [newx * scale, newy * scale]
             }
@@ -231,13 +231,51 @@ import SwiftUI
 //            print("monte: x = \(round(x * scale)), y = \(round(y * scale))")
             return [x * scale,y * scale]
         }
-        return []
+        return [0.0, 0.0]
     }
     
-    var wknn: [Double] {
+    var wknn_new: [Double] {
         if detector.lastBeacons.count < 3 {
             return []
         }
+        let traningdata = [
+            [-61.0,-45.0,-66.0,-58.0,-61.0,-56.0],
+            [-70.0,-58.0,-54.0,-55.0,-56.0,-52.0],
+            [-60.0,-56.0,-58.0,-53.0,-66.0,-50.0],
+            [-51.0,-64.0,-66.0,-60.0,-68.0,-52.0],
+            [-51.0,-64.0,-65.0,-60.0,-57.0,-57.0],
+            [-43.0,-58.0,-65.0,-68.0,-56.0,-50.0],
+            [-57.0,-59.0,-61.0,-57.0,-63.0,-58.0],
+            [-55.0,-67.0,-69.0,-68.0,-56.0,-46.0],
+            [-63.0,-72.0,-78.0,-71.0,-72.0,-64.0],
+            [-58.0,-60.0,-65.0,-56.0,-53.0,-56.0],
+            [-53.0,-59.0,-55.0,-59.0,-63.0,-58.0],
+            [-53.0,-59.0,-68.0,-66.0,-63.0,-47.0],
+            [-55.0,-60.0,-68.0,-62.0,-66.0,-54.0]
+        ]
+        let traningpts = [
+            [45.0,300.0],
+            [45.0,370.0],
+            [150.0,370.0],
+            [200.0,370.0],
+            [300.0,370.0],
+            [300.0,300.0],
+            [150.0,320.0],
+            [200.0,250.0],
+            [60.0,250.0],
+            [300.0,425.0],
+            [45.0,420.0],
+            [200.0,300.0],
+            [350.0,300.0]
+        ]
+        let beacons = [
+            [325.0,250.0],
+            [40.0,300.0],
+            [40.0,425.0],
+            [150.0,425.0],
+            [300.0,425.0],
+            [200.0,300.0]
+        ]
         let scale = 38.537
         var arra = [Double]()
         var arrb = [Double]()
@@ -249,68 +287,74 @@ import SwiftUI
             arrr.append(Double(detector.lastBeacons[i].beacon.rssi))
         }
         
-        let n = 2.0
-        let simtimes = 5000
-        // k = 3
-        var a = [0.0, 0.0, 0.0]
-        var b = [0.0, 0.0, 0.0]
-        var r = [999.0, 999.0, 999.0]
+        //let simtimes = 5000
+        let e = 0.00001
         
-        for i in 0...(detector.lastBeacons.count)-1 {
-            for j in 0...r.count-1 {
-                if (abs(arrr[i]) < r[j]) {
-                    if j < 2 {
-                        for k in (j+1...r.count-1).reversed() {
-                            
-                            r[k] = r[k-1]
-                            b[k] = b[k-1]
-                            a[k] = a[k-1]
-                        }
-                    }
-                    
-                    r[j] = abs(arrr[i])
-                    b[j] = arrb[i]
-                    a[j] = arra[i]
-                    break;
+        var r = [Double]()
+        for i in 0...(beacons.count)-1 {
+            var found = false
+            for j in 0...(detector.lastBeacons.count)-1 {
+                if (beacons[i][0] == arra[j] && beacons[i][1] == arrb[j]) {
+                    r.append(abs(arrr[j]));
+                    found = true
+                    break
                 }
             }
-        }
-        
-        let d01 = pow(10.0, (r[0] - r[1])/n/10)
-//        print("d01: \(d01) r: \((r[0] - r[1])/n/10)")
-        let d12 = pow(10.0, (r[1] - r[2])/n/10)
-        let d02 = pow(10.0, (r[0] - r[2])/n/10)
-        
-        
-//        d01 = round(d01 * 10) //note: convert to integer!
-//        d12 = round(d12 * 10) //note: convert to integer!
-//        d02 = round(d02 * 10) //note: convert to integer!
-        
-        let minx = arra.min()
-        let maxx = arra.max()
-        let miny = arrb.min()
-        let maxy = arrb.max()
-//        let diffx = (maxx!) - (minx!)
-//        let diffy = (maxy!) - (miny!)
-
-        for _ in 0...simtimes-1 {
-            let testx = Double.random(in: minx!...maxx!)
-            let testy = Double.random(in: miny!...maxy!)
-            
-            let d0 = sqrt(pow(Double(testx - a[0]), 2) + pow(Double(testy - b[0]), 2));
-            let d1 = sqrt(pow(Double(testx - a[1]), 2) + pow(Double(testy - b[1]), 2));
-            let d2 = sqrt(pow(Double(testx - a[2]), 2) + pow(Double(testy - b[2]), 2));
-            
-            let d01_cal = d0/d1; //note: convert to integer!
-            let d12_cal = d1/d2; //note: convert to integer!
-            let d02_cal = d0/d2; //note: convert to integer!
-
-            if (abs(d01_cal - Double(d01 as NSNumber)) < 0.3 && abs(d12_cal - Double(d12 as NSNumber)) < 0.3 && abs(d02_cal - Double(d02 as NSNumber)) < 0.3){
-//                print("wknn: x = \(testx), y = \(testy)")
-                return [testx*scale, testy*scale]
+            if (!found) {
+                r.append(0)
             }
         }
-        return []
+        
+        var standardized = [Double]()
+        var weight = [Double]()
+        let minr = r.min()
+        let maxr = r.max()
+        for i in 0...r.count-1 {
+            standardized.append((r[i] - Double(minr!))/(Double(maxr!) - Double(minr!)))
+            if (r[i] == 0.0) {
+                weight.append(0.0)
+            } else {
+                weight.append(1.0 - Double(standardized[i])/2.0)
+            }
+        }
+        
+        
+        var stdtrainingdata = [[Double]]()
+        for i in 0...(traningdata.count-1) {
+            var array = [Double]()
+            let minarray = abs(Double(traningdata[i].max()!))
+            let maxarray = abs(Double(traningdata[i].min()!))
+            for j in 0...traningdata.count-1 {
+                array.append((abs(traningdata[i][j]) - minarray)/(maxarray - minarray))
+            }
+            stdtrainingdata.append(array)
+        }
+        
+        var eucd = [Double]()
+        var denominator = 0.0
+        for i in 0...(traningdata.count-1) {
+            var di = 0.0
+            for j in 0...(r.count-1) {
+                di += weight[j] * pow(abs(standardized[j] - abs(Double(stdtrainingdata[i][j]))), 2.0)
+            }
+            di = sqrt(di) / Double(r.count)
+            eucd.append(di)
+            denominator += 1 / (di + e)
+        }
+        
+        var sumx = 0.0
+        var sumy = 0.0
+        for i in 0...(traningdata.count-1) {
+            sumx += traningpts[i][0] / (eucd[i] + e)
+            sumy += traningpts[i][1] / (eucd[i] + e)
+        }
+        
+        let x = sumx / denominator
+        let y = sumy / denominator
+        
+        return [x*scale, y*scale]
+        
+
     }
 
     var body: some View {
