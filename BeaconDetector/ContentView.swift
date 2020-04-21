@@ -352,8 +352,7 @@ import SwiftUI
         let x = sumx / denominator
         let y = sumy / denominator
         
-        return [x*scale, y*scale]
-        
+        return [x, y]
 
     }
 
