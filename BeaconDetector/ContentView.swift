@@ -376,29 +376,37 @@ import SwiftUI
                         ForEach(self.detector.lastBeacons) { identifiableBeacon in
                             Image("ibeacon").resizable().frame(width: 30, height: 35)
                             .offset(x: CGFloat(truncating: identifiableBeacon.beacon.major)-200, y: CGFloat(truncating: identifiableBeacon.beacon.minor)-311)
+
                         }
-                        // user device position
-//                        // three points
-//                        if self.threePoint.count == 2 {
-//                            Triangle()
-//                            .fill(Color.red)
-//                            .frame(width: 10, height: 10)
-//                                .offset(x: CGFloat(self.threePoint[0] - 200), y: CGFloat(self.threePoint[1] - 311))
-//                        }
-//                        // montecarlo
-//                        if self.montecarlo.count == 2 {
-//                            Triangle()
-//                            .fill(Color.yellow)
-//                            .frame(width: 10, height: 10)
-//                                .offset(x: CGFloat(self.montecarlo[0] - 200), y: CGFloat(self.montecarlo[1] - 311))
-//                        }
-//                        // wknn
-//                        if self.wknn.count == 2 {
-//                            Triangle()
-//                            .fill(Color.blue)
-//                            .frame(width: 10, height: 10)
-//                                .offset(x: CGFloat(self.wknn[0] - 200), y: CGFloat(self.wknn[1] - 311))
-//                        }
+//                         user device position
+                        // three points
+                        if self.threePoint.count == 2 {
+                            Triangle()
+                            .fill(Color.red)
+                            .frame(width: 10, height: 10)
+                                .offset(x: CGFloat(self.threePoint[0] - 200), y: CGFloat(self.threePoint[1] - 311))
+                            Text(String(self.threePoint[0])+","+String(self.threePoint[1])).offset(x: CGFloat(self.threePoint[0] - 200)*0.85, y: CGFloat(self.threePoint[1] - 311)*0.9)
+                            .foregroundColor(Color.red)
+                            
+                        }
+                        // montecarlo
+                        if self.montecarlo.count == 2 {
+                            Triangle()
+                            .fill(Color.yellow)
+                            .frame(width: 10, height: 10)
+                                .offset(x: CGFloat(self.montecarlo[0] - 200), y: CGFloat(self.montecarlo[1] - 311))
+                            Text(String(self.montecarlo[0])+","+String(self.montecarlo[1])).offset(x: CGFloat(self.montecarlo[0] - 200)*0.85, y: CGFloat(self.montecarlo[1] - 311)*0.9)
+                            .foregroundColor(Color.yellow)
+                        }
+                        // wknn
+                        if self.wknn_new.count == 2 {
+                            Triangle()
+                            .fill(Color.blue)
+                            .frame(width: 10, height: 10)
+                                .offset(x: CGFloat(self.wknn_new[0] - 200), y: CGFloat(self.wknn_new[1] - 311))
+                            Text(String(self.wknn_new[0])+","+String(self.wknn_new[1])).offset(x: CGFloat(self.wknn_new[0] - 200)*0.85, y: CGFloat(self.wknn_new[1] - 311)*0.9)
+                                .foregroundColor(Color.blue)
+                        }
                     }
             
                     if self.showList {
