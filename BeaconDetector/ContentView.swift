@@ -154,13 +154,13 @@ import SwiftUI
             let d3_cal = sqrt(pow(x - a3, 2) + pow(y - b3, 2))
             print("d3 = \(d3), d3_cal = \(d3_cal)")
             if (abs(d3_cal - d3) <= err) {
-                print("x = \(round(x * scale)), y = \(round(y * scale))")
+                print("three: x = \(round(x * scale)), y = \(round(y * scale))")
                 return [x * scale, y * scale]
             } else {
                 let diff = d3_cal - d3
                 let newx = -(x - a3) * diff / d3_cal
                 let newy = -(y - b3) * diff / d3_cal
-                print("newx = \(round(newx * scale)), newy = \(round(newy * scale))")
+                print("three: newx = \(round(newx * scale)), newy = \(round(newy * scale))")
                 return [newx * scale, newy * scale]
             }
         }
@@ -228,7 +228,7 @@ import SwiftUI
         if (count_x > 0) {
             let x = sumx / count_x
             let y = sumy / count_y
-//            print("monte: x = \(round(x * scale)), y = \(round(y * scale))")
+            print("monte: x = \(round(x * scale)), y = \(round(y * scale))")
             return [x * scale,y * scale]
         }
         return [0.0, 0.0]
@@ -276,14 +276,13 @@ import SwiftUI
             [300.0,425.0],
             [200.0,300.0]
         ]
-        let scale = 38.537
         var arra = [Double]()
         var arrb = [Double]()
         var arrr = [Double]()
         
         for i in 0...(detector.lastBeacons.count)-1 {
-            arra.append(detector.lastBeacons[i].beacon.major.doubleValue/scale)
-            arrb.append(detector.lastBeacons[i].beacon.minor.doubleValue/scale)
+            arra.append(detector.lastBeacons[i].beacon.major.doubleValue)
+            arrb.append(detector.lastBeacons[i].beacon.minor.doubleValue)
             arrr.append(Double(detector.lastBeacons[i].beacon.rssi))
         }
         
@@ -324,7 +323,7 @@ import SwiftUI
             var array = [Double]()
             let minarray = abs(Double(traningdata[i].max()!))
             let maxarray = abs(Double(traningdata[i].min()!))
-            for j in 0...traningdata.count-1 {
+            for j in 0...traningdata[i].count-1 {
                 array.append((abs(traningdata[i][j]) - minarray)/(maxarray - minarray))
             }
             stdtrainingdata.append(array)
@@ -335,13 +334,14 @@ import SwiftUI
         for i in 0...(traningdata.count-1) {
             var di = 0.0
             for j in 0...(r.count-1) {
+                
+                
                 di += weight[j] * pow(abs(standardized[j] - abs(Double(stdtrainingdata[i][j]))), 2.0)
             }
             di = sqrt(di) / Double(r.count)
             eucd.append(di)
             denominator += 1 / (di + e)
         }
-        
         var sumx = 0.0
         var sumy = 0.0
         for i in 0...(traningdata.count-1) {
@@ -351,7 +351,7 @@ import SwiftUI
         
         let x = sumx / denominator
         let y = sumy / denominator
-        
+        print("wknn: x= \(x), y = \(y)")
         return [x, y]
 
     }
@@ -385,18 +385,17 @@ import SwiftUI
                             .fill(Color.red)
                             .frame(width: 10, height: 10)
                                 .offset(x: CGFloat(self.threePoint[0] - 200), y: CGFloat(self.threePoint[1] - 311))
-                            Text(String(self.threePoint[0])+","+String(self.threePoint[1])).offset(x: CGFloat(self.threePoint[0] - 200)*0.85, y: CGFloat(self.threePoint[1] - 311)*0.9)
+                            Text(String(format: "%.0f, %.0f", self.threePoint[0], self.threePoint[1] )).offset(x: CGFloat(self.threePoint[0] - 200)*0.85, y: CGFloat(self.threePoint[1] - 311)*0.9)
                             .foregroundColor(Color.red)
-                            
                         }
                         // montecarlo
                         if self.montecarlo.count == 2 {
                             Triangle()
-                            .fill(Color.yellow)
+                            .fill(Color.orange)
                             .frame(width: 10, height: 10)
                                 .offset(x: CGFloat(self.montecarlo[0] - 200), y: CGFloat(self.montecarlo[1] - 311))
-                            Text(String(self.montecarlo[0])+","+String(self.montecarlo[1])).offset(x: CGFloat(self.montecarlo[0] - 200)*0.85, y: CGFloat(self.montecarlo[1] - 311)*0.9)
-                            .foregroundColor(Color.yellow)
+                            Text(String(format: "%.0f, %.0f", self.montecarlo[0], self.montecarlo[1] )).offset(x: CGFloat(self.montecarlo[0] - 200)*0.85, y: CGFloat(self.montecarlo[1] - 311)*0.9)
+                            .foregroundColor(Color.orange)
                         }
                         // wknn
                         if self.wknn_new.count == 2 {
@@ -404,7 +403,7 @@ import SwiftUI
                             .fill(Color.blue)
                             .frame(width: 10, height: 10)
                                 .offset(x: CGFloat(self.wknn_new[0] - 200), y: CGFloat(self.wknn_new[1] - 311))
-                            Text(String(self.wknn_new[0])+","+String(self.wknn_new[1])).offset(x: CGFloat(self.wknn_new[0] - 200)*0.85, y: CGFloat(self.wknn_new[1] - 311)*0.9)
+                            Text(String(format: "%.0f, %.0f", self.wknn_new[0], self.wknn_new[1] )).offset(x: CGFloat(self.wknn_new[0] - 200)*0.85, y: CGFloat(self.wknn_new[1] - 311)*0.9)
                                 .foregroundColor(Color.blue)
                         }
                     }
